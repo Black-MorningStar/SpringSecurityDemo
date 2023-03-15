@@ -1,6 +1,7 @@
 package com.example.springsecuritydemo.config;
 
 import com.example.springsecuritydemo.service.MyAuthenticationEntryPoint;
+import com.example.springsecuritydemo.service.MyAuthenticationFilter;
 import com.example.springsecuritydemo.service.MyUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,6 +14,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -34,6 +36,9 @@ public class MySecurityConfig {
                 .authorizeRequests().mvcMatchers("/login").anonymous()
                 .mvcMatchers("/loginError").permitAll()
                 .anyRequest().authenticated();
+
+        //增加自定义认证过滤器
+        http.addFilterBefore(new MyAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
@@ -56,11 +61,18 @@ public class MySecurityConfig {
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setUserDetailsService(userDetailsService());
+        provider.setPasswordEncoder(bCryptPasswordEncoder());
         return provider;
     }
 
     @Bean
     public LoginUrlAuthenticationEntryPoint authenticationEntryPoint() {
         return new LoginUrlAuthenticationEntryPoint("/loginError");
+    }
+
+
+    public static void main(String[] a) {
+        String encode = new BCryptPasswordEncoder().encode("123");
+        System.out.println(encode);
     }
 }

@@ -33,6 +33,6 @@ public class SecurityController {
 
     @PostMapping("/loginOut")
     public String loginOut(String username, String password) {
-        return "";
+        return "退出成功";
     }
 }
