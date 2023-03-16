@@ -26,7 +26,7 @@ public class JWTUtils {
     public static String createToken(String userId, String userName) {
         //设置Token过期时间为2小时
         Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.HOUR,2);
+        calendar.add(Calendar.SECOND,60);
         String token = JWT.create().withHeader(new HashMap<>())
                 .withClaim("userId", userId)
                 .withClaim("userName", userName)
@@ -51,10 +51,11 @@ public class JWTUtils {
             map.put("userName",userName);
             return map;
         } catch (TokenExpiredException e) {
-            throw new RuntimeException("Token已经过期");
+            System.out.println("Token已经过期");
         } catch (Exception x) {
-            throw new RuntimeException("Token解析失败");
+            System.out.println("Token解析失败");
         }
+        return null;
     }
 }
 
