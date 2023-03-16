@@ -32,9 +32,10 @@ public class MySecurityConfig {
                 .and()
                 .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint())
                 .and()
-
                 .authorizeRequests().mvcMatchers("/login").anonymous()
                 .mvcMatchers("/loginError").permitAll()
+                /*.and()
+                .authorizeRequests().mvcMatchers("/busienss").hasRole("ADMIN")*/
                 .anyRequest().authenticated();
 
         //增加自定义认证过滤器

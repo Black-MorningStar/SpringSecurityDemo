@@ -3,6 +3,7 @@ package com.example.springsecuritydemo.controller;
 import com.example.springsecuritydemo.model.MyResponse;
 import com.example.springsecuritydemo.service.SecurityService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,6 +43,7 @@ public class SecurityController {
     }
 
     @PostMapping("/busienss")
+    @PreAuthorize("hasRole('ADMIN')")
     public MyResponse busienss() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Map<String, String> user = (Map<String, String>) authentication.getPrincipal();
