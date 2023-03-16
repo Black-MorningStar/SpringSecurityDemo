@@ -1,10 +1,13 @@
 package com.example.springsecuritydemo.service;
 
+import com.example.springsecuritydemo.utils.JWTUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 /**
@@ -16,15 +19,21 @@ public class SecurityService {
 
     @Autowired
     private AuthenticationManager authenticationManager;
-    @Autowired
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
-
 
     public String login(String username, String password) {
-        UsernamePasswordAuthenticationToken authRequest = UsernamePasswordAuthenticationToken.unauthenticated(username,
-                password);
-        Authentication authenticate = authenticationManager.authenticate(authRequest);
-        System.out.println("登录成功");
-        return "登录成功";
+        try {
+            //开始认证
+            UsernamePasswordAuthenticationToken authRequest = UsernamePasswordAuthenticationToken.unauthenticated(username,
+                    password);
+            Authentication authenticate = authenticationManager.authenticate(authRequest);
+            UserDetails userDetails = (UserDetails) authenticate.getPrincipal();
+            //生成JWT
+            String token = JWTUtils.createToken(userDetails.getUsername(), "君墨笑");
+            return token;
+        } catch (AuthenticationException x) {
+            throw x;
+        } catch (Exception e) {
+            throw new AuthenticationServiceException("登录失败");
+        }
     }
 }
