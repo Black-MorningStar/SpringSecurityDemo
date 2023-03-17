@@ -1,5 +1,6 @@
 package com.example.springsecuritydemo.utils;
 
+import com.alibaba.fastjson.JSONObject;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
@@ -9,6 +10,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -23,13 +25,13 @@ public class JWTUtils {
     /**
      * 创建JWT Token
      */
-    public static String createToken(String userId, String userName) {
+    public static String createToken(String userId, List<String> permission) {
         //设置Token过期时间为2小时
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.SECOND,60);
         String token = JWT.create().withHeader(new HashMap<>())
                 .withClaim("userId", userId)
-                .withClaim("userName", userName)
+                .withClaim("permission", JSONObject.toJSONString(permission))
                 .withExpiresAt(calendar.getTime())
                 .sign(Algorithm.HMAC256(SECRET));
         return token;
@@ -45,10 +47,10 @@ public class JWTUtils {
             JWTVerifier verifier = JWT.require(Algorithm.HMAC256(SECRET)).build();
             DecodedJWT decodedJWT = verifier.verify(token);
             String userId = decodedJWT.getClaim("userId").asString();
-            String userName = decodedJWT.getClaim("userName").asString();
+            String permission = decodedJWT.getClaim("permission").asString();
             Map<String,String> map = new HashMap<>();
             map.put("userId",userId);
-            map.put("userName",userName);
+            map.put("permission",permission);
             return map;
         } catch (TokenExpiredException e) {
             System.out.println("Token已经过期");

@@ -1,5 +1,6 @@
 package com.example.springsecuritydemo.service;
 
+import com.google.common.collect.Lists;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -15,7 +16,7 @@ public class MyUserDetailsService implements UserDetailsService  {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         if (username.contentEquals("psx")) {
             BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-            return new MyUserDetails(username,encoder.encode("123"));
+            return new MyUserDetails(username,encoder.encode("123"), Lists.newArrayList("ADMIN"));
         }
         return null;
     }

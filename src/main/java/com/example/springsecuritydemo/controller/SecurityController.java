@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author 君墨笑
@@ -43,11 +45,12 @@ public class SecurityController {
     }
 
     @PostMapping("/busienss")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public MyResponse busienss() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Map<String, String> user = (Map<String, String>) authentication.getPrincipal();
-        String message = "登录用户ID为: " + user.get("userId") + " 用户名为:" + user.get("userName");
+        String user = (String) authentication.getPrincipal();
+        List<String> permission = authentication.getAuthorities().stream().map(it -> it.getAuthority()).collect(Collectors.toList());
+        String message = "登录用户ID为: " + user + " 权限为:" + permission.toString();
         return MyResponse.success(message);
     }
 }
